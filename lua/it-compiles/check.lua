@@ -1,8 +1,27 @@
 local M = {}
 
-local stdout = vim.loop.new_pipe(false)
-local stderr = vim.loop.new_pipe(false)
+-- Initialize as nil, we'll create new pipes for each check
+local stdout = nil
+local stderr = nil
 local output = ""
+
+local function cleanup()
+	if stdout then
+		if not stdout:is_closing() then
+			stdout:read_stop()
+			stdout:close()
+		end
+		stdout = nil
+	end
+	if stderr then
+		if not stderr:is_closing() then
+			stderr:read_stop()
+			stderr:close()
+		end
+		stderr = nil
+	end
+	output = ""
+end
 
 local function get_errors()
 	local handle
@@ -82,6 +101,13 @@ local function log_errors()
 end
 
 function M.check()
+	-- Clean up any existing handles
+	cleanup()
+
+	-- Create new pipes for this check
+	stdout = vim.loop.new_pipe(false)
+	stderr = vim.loop.new_pipe(false)
+
 	vim.notify("TypeScript compilation started...", vim.log.levels.INFO, { title = "Build" })
 
 	get_errors()
