@@ -1,4 +1,4 @@
-# it-compiles.lua
+# it-compiles.nvim
 
 Send compilation errors to quickfix list.
 
