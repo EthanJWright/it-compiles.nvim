@@ -9,6 +9,13 @@ Send compilation errors to quickfix list.
 ```lua
 return {
   "EthanJWright/it-compiles.nvim",
+  config = function()
+    require("it-compiles").setup({
+      command = {
+        ts = "npm run tsc",
+      },
+    })
+  end,
 }
 ```
 
@@ -16,7 +23,6 @@ return {
 
 ```lua
 map("n", "<leader>cm", function()
-  local it_compiles = require("it-compiles")
-  it_compiles.check()
+  require("it-compiles").check()
 end, { desc = "Build Typescript and see errors" })
 ```

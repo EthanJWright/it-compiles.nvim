@@ -5,6 +5,10 @@ local stdout = nil
 local stderr = nil
 local output = ""
 
+M.command = {
+	ts = "npm run tsc",
+}
+
 local function cleanup()
 	if stdout then
 		if not stdout:is_closing() then
@@ -27,8 +31,9 @@ local function get_errors()
 	local handle
 	-- spawn absolutely does not need every field passed
 	---@diagnostic disable-next-line: missing-fields
-	handle = vim.loop.spawn("npm", {
-		args = { "run", "tsc" },
+	local cmd_parts = vim.split(M.command.ts, " ")
+	handle = vim.loop.spawn(cmd_parts[1], {
+		args = { unpack(cmd_parts, 2) },
 		stdio = { nil, stdout, stderr },
 		detached = true,
 		hide = true,
