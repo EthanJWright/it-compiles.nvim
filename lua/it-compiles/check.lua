@@ -1,12 +1,10 @@
 local M = {}
 
-function M.check()
-	vim.notify("TypeScript compilation started...", vim.log.levels.INFO, { title = "Build" })
+local stdout = vim.loop.new_pipe(false)
+local stderr = vim.loop.new_pipe(false)
+local output = ""
 
-	local stdout = vim.loop.new_pipe(false)
-	local stderr = vim.loop.new_pipe(false)
-	local output = ""
-
+local function get_errors()
 	local handle
 	-- spawn absolutely does not need every field passed
 	---@diagnostic disable-next-line: missing-fields
@@ -55,7 +53,9 @@ function M.check()
 			end
 		end)
 	end)
+end
 
+local function log_errors()
 	if stdout then
 		stdout:read_start(function(err, data)
 			if err then
@@ -79,6 +79,13 @@ function M.check()
 			end
 		end)
 	end
+end
+
+function M.check()
+	vim.notify("TypeScript compilation started...", vim.log.levels.INFO, { title = "Build" })
+
+	get_errors()
+	log_errors()
 end
 
 return M
